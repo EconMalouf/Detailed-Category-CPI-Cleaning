@@ -107,11 +107,6 @@ write_xlsx(cleaned_monthly_analytical_cpi, "C:/Users/anthony.malouf_ebury/Docume
 
 
 
-# ANALYSIS & CHARTING
-
-### 
-# Detailed Categories 
-####
 
 df_detailed <- cleaned_cpi_monthly %>%
   mutate(date = as.Date(date)) %>% 
@@ -228,8 +223,7 @@ head(df_growth)
 
 target_var <- "Headline CPI"
 
-# 2. PREPARE DATA
-# Corrected: Added "_" inside the strings to match the .names="{.col}_{.fn}" pattern
+
 cols_to_plot <- c(
   paste0(target_var, "_mom"),
   paste0(target_var, "_qoq"),
@@ -245,23 +239,19 @@ chart_data <- df_growth %>%
   mutate(Metric = factor(Metric, levels = cols_to_plot))
 
 
-# Filter to find the last non-NA value for each metric
 last_points <- chart_data %>%
   group_by(Metric) %>%
   filter(!is.na(Value)) %>%
   filter(date == max(date)) %>%
   ungroup()
 
-# ---------------------------------------------------------
-# 3. CREATE SEPARATE CHARTS (UPDATED)
-# ---------------------------------------------------------
+
 ggplot(chart_data, aes(x = date, y = Value)) +
   geom_line(color = "darkblue", size = 1) + 
   
-  # --- NEW: Add Red Dot at the end ---
+
   geom_point(data = last_points, color = "red", size = 2) +
   
-  # --- NEW: Add Text Label ---
   geom_text(data = last_points, 
             aes(label = round(Value, 2)), 
             hjust = -0.3, 
@@ -269,10 +259,10 @@ ggplot(chart_data, aes(x = date, y = Value)) +
             fontface = "bold", 
             size = 3.5) +
   
-  # --- NEW: Expand X-axis so label fits ---
+ 
   scale_x_date(expand = expansion(mult = c(0.05, 0.25))) +
   
-  # scales = "free" ensures every chart has its own Date axis
+ 
   facet_wrap(~Metric, scales = "free", ncol = 2) + 
   
   labs(title = paste("Analysis of:", target_var),
@@ -285,3 +275,4 @@ ggplot(chart_data, aes(x = date, y = Value)) +
     strip.text = element_text(face = "bold", size = 10),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )                            
+
